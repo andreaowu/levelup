@@ -1,0 +1,44 @@
+!!!5
+html
+  script(src="/socket.io/socket.io.js")
+  script(type='text/javascript')
+      var socket = io.connect();
+
+  head
+    title #{title}
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js')
+  body
+    header
+      h1 Welcome to To-Be Level Up!
+    .container
+      .main-content
+        block content
+      input(type="button", value = "Join game")
+
+      <h2 id="name"> blah</h2>
+
+      script(type='text/javascript')
+
+        socket.on('connect', function () {
+          $("h2").hide()
+          $("input").click(function() {
+            var enteredData = prompt("What's your name?");
+            socket.emit('increment', enteredData);
+          });
+        });
+
+        socket.on('alert', function (counter, name) {
+          $("input").hide();
+          document.getElementById("name").innerHTML=name;
+          $("h2").show();
+          console.log("hi");
+          alert("Your name is " + name);
+        });
+
+        socket.on('start', function() {
+
+        });
+
+      .sidebar
+        block sidebar
