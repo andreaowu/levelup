@@ -11,7 +11,9 @@ var express = require("express")
 var app = express();
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
-var names = new Array();
+var clients = {};
+var names = {};
+var namesArray = [];
 
 app.configure(function(){
   app.set('views', __dirname + '/views');
@@ -34,11 +36,18 @@ io.configure(function () {
 });
 
 io.sockets.on('connection', function (socket) {
+  clients[socket.id] = socket;
+  if (namesArray.length == 4) {
+    socket.emit('disconnect');
+    alert("Sorry, table full");
+  };
+
 	socket.on('increment', function (name) {
 		counter += 1;
 		console.log(counter);
-		names.push(name);
-		socket.emit('alert', counter, name);
+    names[name] = socket.id;
+    namesArray.push(name);
+		socket.emit('alert', namesArray);
 	});
 });
 

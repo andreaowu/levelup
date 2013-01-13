@@ -15,25 +15,26 @@ html
       .main-content
         block content
       input(type="button", value = "Join game")
-
-      <h2 id="name"> blah</h2>
+      <h2 id="name0"> blah1</h2>
+      <h2 id="name1"></h2>
+      <h2 id="name2"></h2>
+      <h2 id="name3"></h2>
 
       script(type='text/javascript')
 
-        socket.on('connect', function () {
-          $("h2").hide()
-          $("input").click(function() {
+        $("h2").hide();
+        $("input").click(function () {
             var enteredData = prompt("What's your name?");
             socket.emit('increment', enteredData);
+            $(this).hide(function () {
+              $(this).remove();
+            });
           });
-        });
 
-        socket.on('alert', function (counter, name) {
-          $("input").hide();
-          document.getElementById("name").innerHTML=name;
+        socket.on('alert', function (namesArray) {
+          for (var i=0; i < namesArray.length; i++)
+            document.getElementById("name" + i).innerHTML=namesArray[i];
           $("h2").show();
-          console.log("hi");
-          alert("Your name is " + name);
         });
 
         socket.on('start', function() {
