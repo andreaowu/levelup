@@ -38,6 +38,7 @@ io.configure(function () {
 io.sockets.on('connection', function (socket) {
   clients[socket.id] = socket;
   if (namesArray.length == 4) {
+    console.log("goodbye");
     socket.emit('disconnect');
   };
 
