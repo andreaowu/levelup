@@ -37,8 +37,8 @@ html
           $("h2").show();
         });
 
-        socket.on('start', function() {
-
+        socket.on('disconnect', function() {
+          alert("Sorry, table full");
         });
 
       .sidebar
