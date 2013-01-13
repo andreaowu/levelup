@@ -6,13 +6,12 @@
 var express = require("express")
 , stylus = require("stylus")
 , nib = require("nib")
-, http = require('http');
-, $ = require('jquery');
+, http = require('http')
 
 var app = express();
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
-var names = "";
+var names = new Array();
 
 app.configure(function(){
   app.set('views', __dirname + '/views');
@@ -27,9 +26,7 @@ app.configure(function(){
 });
 
 var port = process.env.PORT || 3000;
-server.listen(port, function() {
-  console.log('Listening on ' + port);
-});
+server.listen(port);
 
 io.configure(function () { 
   io.set("transports", ["xhr-polling"]); 
