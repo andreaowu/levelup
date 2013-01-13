@@ -37,5 +37,9 @@ html
           $("h2").show();
         });
 
+        socket.on('goodbye', function () {
+          alert("Sorry, table at capacity");
+        });
+
       .sidebar
         block sidebar

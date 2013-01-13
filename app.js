@@ -37,17 +37,15 @@ io.configure(function () {
 
 io.sockets.on('connection', function (socket) {
   clients[socket.id] = socket;
-  if (namesArray.length == 4) {
-    console.log("goodbye");
-    socket.emit('disconnect');
-  };
 
 	socket.on('increment', function (name) {
-		counter += 1;
-		console.log(counter);
     names[name] = socket.id;
     namesArray.push(name);
-		socket.emit('alert', namesArray);
+    if (namesArray.length > 4) {
+      socket.emit('goodbye');
+    } else {
+      socket.emit('alert', namesArray);
+    }
 	});
 });
 
