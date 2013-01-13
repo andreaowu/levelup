@@ -38,8 +38,8 @@ io.configure(function () {
 io.sockets.on('connection', function (socket) {
   clients[socket.id] = socket;
   if (namesArray.length == 4) {
-    socket.emit('disconnect');
     alert("Sorry, table full");
+    socket.emit('disconnect');
   };
 
 	socket.on('increment', function (name) {
