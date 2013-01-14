@@ -16,7 +16,8 @@ html
       .main-content
         block content
       center
-        input(type="button", value = "Join game")
+        input(type="button", id="joinGame", value = "Join game")
+        input(type="button", id="drawCard", value = "Draw Card")
       br
       br
       center 
@@ -28,20 +29,31 @@ html
           h3(id="name1")
           h3(id="name2")
           h3(id="name3")
+      h5(id="whoisdrawing")
+      h5(id="yougotthiscard")
 
       script(type='text/javascript')
         $("h4").hide();
+        $("#drawCard").hide();
+        $("#whoisdrawing").hide();
+        $("#yougotthiscard").hide();
 
-        $("input").click(function () {
-            var enteredData = prompt("What's your name?");
-            socket.emit('join', enteredData);
-            $(this).hide(function () {
-              $(this).remove();
-            });
-            $("h4").show();
+        $("#joinGame").click(function () {
+          var enteredData = prompt("What's your name?");
+          socket.emit('join', enteredData);
+          $(this).hide(function () {
+            $(this).remove();
+          });
+          $("h4").show();
+        });
+
+        $("#drawCard").click(function () {
+            socket.emit('drew');
+            $("#drawCard").hide();
           });
 
         socket.on('start', function () {
+          $("#drawCard").show();
         });
 
         socket.on('level', function (players, numbers) {
@@ -58,20 +70,41 @@ html
             }
             document.getElementById("name" + i).innerHTML = players[i] + ", level: " + numbers[i];
           }
-          document.getElementById("name1").innerHTML = document.getElementById("name1").innerHTML + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + document.getElementById("name3").innerHTML;
-          document.getElementById("name3").innerHTML = "";
           $("#name0").css("margin-left", "50px")
-          $("#name0").css("margin-top", "-260px")
-          $("#name1").css("margin-left", "-78px")
-          $("#name1").css("margin-top", "-130px")
-          $("#name1").css("margin-right", "-1000px")
+          $("#name0").css("margin-top", "-263px")
+          $("#name1").css("margin-right", "208px")
+          $("#name1").css("float", "right")
+          $("#name1").css("margin-top", "-150px")
+          $("#name1").css("margin-left", "-210px")
           $("#name2").css("margin-left", "53px")
-          $("#name2").css("margin-top", "5px")
-          $("#name3").css("margin-left", "200px")
-          $("#name3").css("margin-top", "-160px")
+          $("#name2").css("margin-top", "8px")
+          $("#name3").css("margin-left", "210px")
+          $("#name3").css("margin-top", "-175px")
+          $("#name3").css("margin-right", "-200px")
           $("h3").show();
+          socket.emit('start');
+        });
+
+        socket.on('drawing', function(name) {
+          document.getElementById("whoisdrawing").innerHTML = name + " is drawing a card";
+          $("#whoisdrawing").css("text-align", "center")
+          $("#whoisdrawing").css("margin-top", "80px")
+          $("#whoisdrawing").show();
+        });
+
+        socket.on('giveCard', function(card) {
+          console.log("give card");
+          document.getElementById("yougotthiscard").innerHTML = "You got this card: " + card;
+          $("#yougotthiscard").css("text-align", "center");
+          $("#yougotthiscard").show();
+        });
+
+        socket.on('startGame', function(card) {
+          document.getElementById("yougotthiscard").innerHTML = "You got this card: " + card;
+          $("#yougotthiscard").show();
         });
 
         socket.on('goodbye', function () {
           alert("Sorry, table at capacity");
+          socket.emit('disconnect');
         });

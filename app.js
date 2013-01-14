@@ -1,6 +1,12 @@
 /*
 * Module dependencies
 * http://clock.co.uk/tech-blogs/a-simple-website-in-nodejs-with-express-jade-and-stylus
+* 
+*
+* socket order:
+* client: press join game, 'join'
+* server: gets information on 'join'
+* when enough people, give random levels by emit 'level'
 */
 
 var express = require("express")
@@ -11,7 +17,7 @@ var express = require("express")
 var app = express();
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
-var clients = {}; //socket.id to socket
+var clients = {};
 var names = {};   // name to socket.id
 var namesArray = [];
 var cards = ["spades 1", "spades 2", "spades 3", "spades 4", "spades 5", "spades 6", "spades 7", "spades 8", "spades 9", "spades10", "spades J", "spades Q", "spades K", 
@@ -23,6 +29,8 @@ var cards = ["spades 1", "spades 2", "spades 3", "spades 4", "spades 5", "spades
             "diamonds 1", "diamonds 2", "diamonds 3", "diamonds 4", "diamonds 5", "diamonds 6", "diamonds 7", "diamonds 8", "diamonds 9", "diamonds10", "diamonds J", "diamonds Q", "diamonds K", 
             "clubs 1", "clubs 2", "clubs 3", "clubs 4", "clubs 5", "clubs 6", "clubs 7", "clubs 8", "clubs 9", "clubs10", "clubs J", "clubs Q", "clubs K",
             "bigJoker  ", "bigJoker  ", "smallJoker  ", "smallJoker  "];
+var drawer = 0;
+
 
 app.configure(function(){
   app.set('views', __dirname + '/views');
@@ -51,14 +59,11 @@ function sleep(milliSeconds) {
 
 io.sockets.on('connection', function (socket) {
   clients[socket.id] = socket;
-
 	socket.on('join', function (name) {
     names[name] = socket.id;
     namesArray.push(name);
     if (namesArray.length > 4) {
       socket.emit('goodbye');
-    } else {
-      socket.emit('alert', namesArray);
     }
     if (namesArray.length == 4) {
       cards = shuffleArray(cards);
@@ -68,6 +73,25 @@ io.sockets.on('connection', function (socket) {
       io.sockets.emit('start');
     };
 	});
+
+  socket.on('start', function() {
+    io.sockets.emit('drawing', namesArray[drawer]);
+    clients[names[namesArray[drawer]]].emit('start');
+  });
+
+  socket.on('drew', function() {
+    if (cards.length > 0) {
+      socket.emit('giveCard', cards.shift());
+      drawer += 1;
+      drawer = drawer % 4;
+      io.sockets.emit('drawing', namesArray[drawer]);
+      clients[names[namesArray[drawer]]].emit('start')
+    } else {
+      io.sockets.emit('startGame');
+    }
+  });
+
+
 });
 
 var counter = 0;
