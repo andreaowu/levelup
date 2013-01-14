@@ -31,16 +31,24 @@ html
           h3(id="name3")
       h5(id="whoisdrawing")
       h5(id="yougotthiscard")
+      h6(id="card")
+      h7(id="declaration")
 
       script(type='text/javascript')
         $("h4").hide();
         $("#drawCard").hide();
         $("#whoisdrawing").hide();
         $("#yougotthiscard").hide();
+        $("#card").hide();
+
+        var cardSuit;
+        var cardNum;
+        var name;
 
         $("#joinGame").click(function () {
           var enteredData = prompt("What's your name?");
           socket.emit('join', enteredData);
+          name = enteredData;
           $(this).hide(function () {
             $(this).remove();
           });
@@ -48,9 +56,13 @@ html
         });
 
         $("#drawCard").click(function () {
-            socket.emit('drew');
-            $("#drawCard").hide();
-          });
+          socket.emit('drew');
+          $("#drawCard").hide();
+        });
+
+        $("#card").click(function () {
+          socket.emit('declare', name, cardSuit, cardNum);
+        });
 
         socket.on('start', function () {
           $("#drawCard").show();
@@ -93,10 +105,25 @@ html
         });
 
         socket.on('giveCard', function(card) {
-          console.log("give card");
+          console.log("give card: " + card);
           document.getElementById("yougotthiscard").innerHTML = "You got this card: " + card;
+          document.getElementById("card").innerHTML = document.getElementById("card").innerHTML + "<input type='image' src='" + card[card.length - 1].substring(0, card[card.length - 1].length - 2) + "'  height='50px'>" + card[card.length - 1].substring(card[card.length - 1].length - 2, card[card.length - 1].length);
           $("#yougotthiscard").css("text-align", "center");
           $("#yougotthiscard").show();
+          $("#card").show();
+
+          cardSuit = card[card.length - 1].substring(0, card[card.length - 1].length - 2);
+          cardNum = card[card.length - 1].substring(card[card.length - 1].length - 2, card[card.length - 1].length);
+        });
+
+        socket.on('declarationHappened', function (player, suit, number) {
+          console.log("happened");
+          console.log(suit);
+          console.log(number);
+          alert(player + " declared!");
+          document.getElementById("declaration").innerHTML = player + " declared: " + number +  " of <img src='" + suit + "' height = '25px'>!";
+          $("#declaration").css("text-align", "center");
+          $("#declaration").show();
         });
 
         socket.on('startGame', function(card) {

@@ -17,20 +17,21 @@ var express = require("express")
 var app = express();
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
-var clients = {};
+var clients = {}; //socket.id to socket
 var names = {};   // name to socket.id
-var namesArray = [];
-var cards = ["spades 1", "spades 2", "spades 3", "spades 4", "spades 5", "spades 6", "spades 7", "spades 8", "spades 9", "spades10", "spades J", "spades Q", "spades K", 
-            "hearts 1", "hearts 2", "hearts 3", "hearts 4", "hearts 5", "hearts 6", "hearts 7", "hearts 8", "hearts 9", "hearts10", "hearts J", "hearts Q", "hearts K", 
-            "diamonds 1", "diamonds 2", "diamonds 3", "diamonds 4", "diamonds 5", "diamonds 6", "diamonds 7", "diamonds 8", "diamonds 9", "diamonds10", "diamonds J", "diamonds Q", "diamonds K", 
-            "clubs 1", "clubs 2", "clubs 3", "clubs 4", "clubs 5", "clubs 6", "clubs 7", "clubs 8", "clubs 9", "clubs10", "clubs J", "clubs Q", "clubs K",
-            "spades 1", "spades 2", "spades 3", "spades 4", "spades 5", "spades 6", "spades 7", "spades 8", "spades 9", "spades10", "spades J", "spades Q", "spades K", 
-            "hearts 1", "hearts 2", "hearts 3", "hearts 4", "hearts 5", "hearts 6", "hearts 7", "hearts 8", "hearts 9", "hearts10", "hearts J", "hearts Q", "hearts K", 
-            "diamonds 1", "diamonds 2", "diamonds 3", "diamonds 4", "diamonds 5", "diamonds 6", "diamonds 7", "diamonds 8", "diamonds 9", "diamonds10", "diamonds J", "diamonds Q", "diamonds K", 
-            "clubs 1", "clubs 2", "clubs 3", "clubs 4", "clubs 5", "clubs 6", "clubs 7", "clubs 8", "clubs 9", "clubs10", "clubs J", "clubs Q", "clubs K",
+var socket_name = {} //socket to name
+var namesArray = new Array();
+var cards = ["http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png 1", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png 2", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png 3", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png 4", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png 5", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png 6", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png 7", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png 8", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png 9", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png10", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png J", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png Q", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png K", 
+            "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png 1", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png 2", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png 3", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png 4", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png 5", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png 6", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png 7", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png 8", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png 9", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png10", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png J", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png Q", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png K", 
+            "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png 1", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png 2", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png 3", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png 4", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png 5", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png 6", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png 7", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png 8", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png 9", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png10", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png J", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png Q", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png K", 
+            "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png 1", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png 2", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png 3", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png 4", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png 5", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png 6", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png 7", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png 8", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png 9", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png10", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png J", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png Q", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png K",
+            "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png 1", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png 2", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png 3", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png 4", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png 5", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png 6", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png 7", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png 8", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png 9", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png10", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png J", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png Q", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zpsb6b976b9.png K", 
+            "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png 1", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png 2", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png 3", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png 4", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png 5", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png 6", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png 7", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png 8", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png 9", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png10", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png J", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png Q", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps38048c5a.png K", 
+            "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png 1", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png 2", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png 3", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png 4", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png 5", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png 6", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png 7", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png 8", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png 9", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png10", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png J", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png Q", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/diamond_zpsfdc31ca3.png K", 
+            "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png 1", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png 2", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png 3", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png 4", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png 5", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png 6", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png 7", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png 8", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png 9", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png10", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png J", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png Q", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps4cacfedf.png K",
             "bigJoker  ", "bigJoker  ", "smallJoker  ", "smallJoker  "];
 var drawer = 0;
-
+var player_cards = {}; //name to cards
 
 app.configure(function(){
   app.set('views', __dirname + '/views');
@@ -61,6 +62,7 @@ io.sockets.on('connection', function (socket) {
   clients[socket.id] = socket;
 	socket.on('join', function (name) {
     names[name] = socket.id;
+    socket_name[socket] = name;
     namesArray.push(name);
     if (namesArray.length > 4) {
       socket.emit('goodbye');
@@ -68,29 +70,33 @@ io.sockets.on('connection', function (socket) {
     if (namesArray.length == 4) {
       cards = shuffleArray(cards);
       for (var i = 0; i < 4; i++) {
-        io.sockets.emit('level', namesArray, new Array(Math.floor(Math.random()*15 + 1), Math.floor(Math.random()*15 + 1), Math.floor(Math.random()*15 + 1), Math.floor(Math.random()*15 + 1)));
+        player_cards[namesArray[i]] = [];
       };
-      io.sockets.emit('start');
+      io.sockets.emit('level', namesArray, new Array(Math.floor(Math.random()*15 + 1), Math.floor(Math.random()*15 + 1), Math.floor(Math.random()*15 + 1), Math.floor(Math.random()*15 + 1)));
+      clients[names[namesArray[drawer]]].emit('start');
     };
 	});
 
   socket.on('start', function() {
     io.sockets.emit('drawing', namesArray[drawer]);
-    clients[names[namesArray[drawer]]].emit('start');
   });
 
   socket.on('drew', function() {
     if (cards.length > 0) {
-      socket.emit('giveCard', cards.shift());
+      player_cards[namesArray[drawer]].push(cards.shift());
+      clients[names[namesArray[drawer]]].emit('giveCard', player_cards[namesArray[drawer]]);
       drawer += 1;
       drawer = drawer % 4;
       io.sockets.emit('drawing', namesArray[drawer]);
-      clients[names[namesArray[drawer]]].emit('start')
+      clients[names[namesArray[drawer]]].emit('start');
     } else {
       io.sockets.emit('startGame');
     }
   });
 
+  socket.on('declare', function(name, suit, number) {
+    io.sockets.emit('declarationHappened', name, suit, number);
+  });
 
 });
 
