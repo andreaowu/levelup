@@ -8,38 +8,70 @@ html
     title #{title}
     link(rel='stylesheet', href='/stylesheets/style.css')
     script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js')
+  
   body
     header
-      h1 Welcome to To-Be Level Up!
+      h1 Welcome to Level Up!
     .container
       .main-content
         block content
-      input(type="button", value = "Join game")
-      <h2 id="name0"> blah1</h2>
-      <h2 id="name1"></h2>
-      <h2 id="name2"></h2>
-      <h2 id="name3"></h2>
+      center
+        input(type="button", value = "Join game")
+      br
+      br
+      center 
+        h4(id="waiting") Waiting for players...
+      .sidebar
+        .widget
+          h2 Table
+          h3(id="name0")
+          h3(id="name1")
+          h3(id="name2")
+          h3(id="name3")
 
       script(type='text/javascript')
+        $("h4").hide();
 
-        $("h2").hide();
         $("input").click(function () {
             var enteredData = prompt("What's your name?");
-            socket.emit('increment', enteredData);
+            socket.emit('join', enteredData);
             $(this).hide(function () {
               $(this).remove();
             });
+            $("h4").show();
           });
 
-        socket.on('alert', function (namesArray) {
-          for (var i=0; i < namesArray.length; i++)
-            document.getElementById("name" + i).innerHTML=namesArray[i];
-          $("h2").show();
+        socket.on('start', function () {
+        });
+
+        socket.on('level', function (players, numbers) {
+          $("h4").hide();
+          for (var i = 0; i < 4; i++) {
+            if (numbers[i] > 10) {
+              if (numbers[i] == 11) {
+                numbers[i] = "J";
+              } else if (numbers[i] == 12) {
+                numbers[i] = "Q";
+              } else {
+                numbers[i] = "K";
+              }
+            }
+            document.getElementById("name" + i).innerHTML = players[i] + ", level: " + numbers[i];
+          }
+          document.getElementById("name1").innerHTML = document.getElementById("name1").innerHTML + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + document.getElementById("name3").innerHTML;
+          document.getElementById("name3").innerHTML = "";
+          $("#name0").css("margin-left", "50px")
+          $("#name0").css("margin-top", "-260px")
+          $("#name1").css("margin-left", "-78px")
+          $("#name1").css("margin-top", "-130px")
+          $("#name1").css("margin-right", "-1000px")
+          $("#name2").css("margin-left", "53px")
+          $("#name2").css("margin-top", "5px")
+          $("#name3").css("margin-left", "200px")
+          $("#name3").css("margin-top", "-160px")
+          $("h3").show();
         });
 
         socket.on('goodbye', function () {
           alert("Sorry, table at capacity");
         });
-
-      .sidebar
-        block sidebar
