@@ -44,6 +44,7 @@ html
         var cardSuit;
         var cardNum;
         var name;
+        var cards = [];
 
         $("#joinGame").click(function () {
           var enteredData = prompt("What's your name?");
@@ -105,15 +106,14 @@ html
         });
 
         socket.on('giveCard', function(card) {
-          console.log("give card: " + card);
-          document.getElementById("yougotthiscard").innerHTML = "You got this card: " + card;
-          document.getElementById("card").innerHTML = document.getElementById("card").innerHTML + "<input type='image' src='" + card[card.length - 1].substring(0, card[card.length - 1].length - 2) + "'  height='50px'>" + card[card.length - 1].substring(card[card.length - 1].length - 2, card[card.length - 1].length);
-          $("#yougotthiscard").css("text-align", "center");
-          $("#yougotthiscard").show();
+          console.log("card: " + card);
+          document.getElementById("card").innerHTML = "<input type='image' src='" + card.substring(0, card.length - 2) + "'  height='50px'>" + card.substring(card.length - 2, card.length);
+
+          binarySearch(card);
           $("#card").show();
 
-          cardSuit = card[card.length - 1].substring(0, card[card.length - 1].length - 2);
-          cardNum = card[card.length - 1].substring(card[card.length - 1].length - 2, card[card.length - 1].length);
+          cardSuit = card.substring(0, card.length - 2);
+          cardNum = card.substring(card.length - 2, card.length);
         });
 
         socket.on('declarationHappened', function (player, suit, number) {
@@ -135,3 +135,43 @@ html
           alert("Sorry, table at capacity");
           socket.emit('disconnect');
         });
+
+        function binarySearch(insert) {
+          var counter = 0;
+          while (1) {
+            if (cards[counter] > insert && ( (counter - 1 >= 0 && cards[counter - 1] < insert) || counter - 1 < 0) ) {
+              break;
+            } else if (cards[counter] < insert) {
+              if (counter == 0) {
+                if (cards.length == 1) {
+                  counter = Math.floor((cards.length + 1)/2);
+                } else {
+                  counter = Math.floor(cards.length/2);
+                }
+              } else {
+                counter = counter*2;
+              }
+            } else if (counter - 1 >= 0 && cards[counter - 1] > insert) {
+              if (counter == 0) {
+                if (cards.length == 1) {
+                  counter = Math.floor((cards.length + 1)/2);
+                } else {
+                  counter = Math.floor(cards.length/2);
+                }
+              } else {
+                counter = counter/2;
+              }
+            } else {
+              break;
+            }
+          }
+          cards.push(insert);
+          for (var i = cards.length - 1; i > counter; i--) {
+            cards[i] = cards[i - 1];
+          }
+          cards[counter] = insert;
+          console.log(cards);
+        }
+
+
+

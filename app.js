@@ -83,8 +83,8 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('drew', function() {
     if (cards.length > 0) {
+      clients[names[namesArray[drawer]]].emit('giveCard', cards[0]);
       player_cards[namesArray[drawer]].push(cards.shift());
-      clients[names[namesArray[drawer]]].emit('giveCard', player_cards[namesArray[drawer]]);
       drawer += 1;
       drawer = drawer % 4;
       io.sockets.emit('drawing', namesArray[drawer]);
