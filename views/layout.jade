@@ -29,22 +29,27 @@ html
           h3(id="name1")
           h3(id="name2")
           h3(id="name3")
+
       h5(id="whoisdrawing")
       h5(id="yougotthiscard")
-      h6(id="card")
       h7(id="declaration")
+      h8(id="takingturn")
+      h9(id="partner")
 
       script(type='text/javascript')
         $("h4").hide();
         $("#drawCard").hide();
         $("#whoisdrawing").hide();
         $("#yougotthiscard").hide();
-        $("#card").hide();
+        $("takingturn").hide();
+        $("partner").hide();
 
         var cardSuit;
         var cardNum;
         var name;
         var cards = [];
+        var margintop = 0;
+        var declare = 0;
 
         $("#joinGame").click(function () {
           var enteredData = prompt("What's your name?");
@@ -62,7 +67,12 @@ html
         });
 
         $("#card").click(function () {
-          socket.emit('declare', name, cardSuit, cardNum);
+          if ((declare && two(this)) || declare == 0) {
+            console.log("hi");
+            socket.emit('declare', name, cardSuit, cardNum);
+          } else {
+            alert("You do not have the cards to overtrump!");
+          }
         });
 
         socket.on('start', function () {
@@ -107,33 +117,64 @@ html
 
         socket.on('giveCard', function(card) {
           console.log("card: " + card);
-          document.getElementById("card").innerHTML = "<input type='image' src='" + card.substring(0, card.length - 2) + "'  height='50px'>" + card.substring(card.length - 2, card.length);
+          var str = "<input type='image' src='" + card.substring(0, card.length - 2) + "'><p>" + card.substring(card.length - 2, card.length) + "</p>";
 
+          $("<h6 id='card'>" + str).appendTo(document.body);
           binarySearch(card);
-          $("#card").show();
 
           cardSuit = card.substring(0, card.length - 2);
           cardNum = card.substring(card.length - 2, card.length);
         });
 
         socket.on('declarationHappened', function (player, suit, number) {
-          console.log("happened");
-          console.log(suit);
-          console.log(number);
           alert(player + " declared!");
           document.getElementById("declaration").innerHTML = player + " declared: " + number +  " of <img src='" + suit + "' height = '25px'>!";
+          declare = 1;
           $("#declaration").css("text-align", "center");
           $("#declaration").show();
         });
 
-        socket.on('startGame', function(card) {
-          document.getElementById("yougotthiscard").innerHTML = "You got this card: " + card;
-          $("#yougotthiscard").show();
+        socket.on('who stacking', function(name) {
+          alert("Game starting, " + name + " is stacking cards.");
         });
 
+        socket.on('stack', function(cards) {
+          alert("Here's your stack");
+          for (var i = 0; i < 4; i++) {
+            binarySearch(cards[i]);
+          }
+          alert("Choose four cards to stack");
+          var stacked = 0;
+          $("h6").click(function () {
+            socket.emit('stacked', this);
+            $(this).hide(function () {
+              $(this).remove();
+            });
+            stacked += 1;
+            if (stacked == 4) {
+              var partner = alert("What card is your partner?");
+              socket.emit('done stacking', partner);
+            }
+          });
+        });
+
+        socket.on('who taking turn', function(name) {
+          document.getElementById("takingturn").innerHTML = name + " is playing a card";
+          $("takingturn").show();
+        });
+
+        socket.on('partner', function(partner, declarer) {
+          document.getElementById("partner").innerHTML = "The person who plays " + partner + " is " + declarer + "'s partner";
+          $("partner").show();
+        });
+
+        socket.on('taking turn', function() {});
+
         socket.on('goodbye', function () {
+          $("h4").hide();
           alert("Sorry, table at capacity");
-          socket.emit('disconnect');
+          document.getElementById("waiting").innerHTML = "Table at capacity";
+          $("h4").show();
         });
 
         function binarySearch(insert) {
@@ -171,6 +212,42 @@ html
           }
           cards[counter] = insert;
           console.log(cards);
+        };
+
+        function two(insert) {
+          var counter = 0;
+          while (1) {
+            if ( ((counter + 1 < cards.length && cards[counter+1] > insert) || counter + 1 >= cards.length) && ((counter - 1 >= 0 && cards[counter - 1] < insert) || counter - 1 < 0) ) {
+              break;
+            } else if (cards[counter] < insert) {
+              if (counter == 0) {
+                if (cards.length == 1) {
+                  counter = Math.floor((cards.length + 1)/2);
+                } else {
+                  counter = Math.floor(cards.length/2);
+                }
+              } else {
+                counter = counter*2;
+              }
+            } else if (counter - 1 >= 0 && cards[counter - 1] > insert) {
+              if (counter == 0) {
+                if (cards.length == 1) {
+                  counter = Math.floor((cards.length + 1)/2);
+                } else {
+                  counter = Math.floor(cards.length/2);
+                }
+              } else {
+                counter = counter/2;
+              }
+            } else {
+              break;
+            }
+          }
+          if ( (counter + 1 < cards.length && cards[counter+1] == insert) || (counter - 1 >= 0 && cards[counter-1] == insert) ) {
+            return 1;
+          } else {
+            return 0;
+          }
         }
 
 
