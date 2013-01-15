@@ -74,10 +74,12 @@ io.sockets.on('connection', function (socket) {
     }
     if (namesArray.length == 4) {
       cards = shuffleArray(cards);
+      levels = new Array(Math.ceil(Math.random()*12 + 1), Math.ceil(Math.random()*12 + 1), Math.ceil(Math.random()*12 + 1), Math.ceil(Math.random()*12 + 1));
+      io.sockets.emit('level', namesArray, levels);
       for (var i = 0; i < 4; i++) {
         player_cards[namesArray[i]] = [];
+        clients[names[namesArray[drawer+i]]].emit('personal level', levels[drawer+i]);
       };
-      io.sockets.emit('level', namesArray, new Array(Math.floor(Math.random()*15 + 1), Math.floor(Math.random()*15 + 1), Math.floor(Math.random()*15 + 1), Math.floor(Math.random()*15 + 1)));
       clients[names[namesArray[drawer]]].emit('start');
     };
 	});

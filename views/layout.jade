@@ -50,6 +50,7 @@ html
         var cards = [];
         var margintop = 0;
         var declare = 0;
+        var onLevel;
 
         $("#joinGame").click(function () {
           var enteredData = prompt("What's your name?");
@@ -64,15 +65,6 @@ html
         $("#drawCard").click(function () {
           socket.emit('drew');
           $("#drawCard").hide();
-        });
-
-        $("#card").click(function () {
-          if ((declare && two(this)) || declare == 0) {
-            console.log("hi");
-            socket.emit('declare', name, cardSuit, cardNum);
-          } else {
-            alert("You do not have the cards to overtrump!");
-          }
         });
 
         socket.on('start', function () {
@@ -108,6 +100,19 @@ html
           socket.emit('start');
         });
 
+        socket.on('personal level', function(level) {
+          if (level == 11) {
+            onLevel = "J";
+          } else if (level == 12) {
+            onLevel = "Q";
+          } else if (level == 13) {
+            onLevel = "K";
+          } else {
+            onLevel = level;
+          }
+          console.log("personal level:" + onLevel);
+        });
+
         socket.on('drawing', function(name) {
           document.getElementById("whoisdrawing").innerHTML = name + " is drawing a card";
           $("#whoisdrawing").css("text-align", "center")
@@ -117,13 +122,18 @@ html
 
         socket.on('giveCard', function(card) {
           console.log("card: " + card);
-          var str = "<input type='image' src='" + card.substring(0, card.length - 2) + "'><p>" + card.substring(card.length - 2, card.length) + "</p>";
-
-          $("<h6 id='card'>" + str).appendTo(document.body);
-          binarySearch(card);
-
           cardSuit = card.substring(0, card.length - 2);
           cardNum = card.substring(card.length - 2, card.length);
+          var str;
+          console.log(cardNum)
+          console.log(onLevel)
+          if (cardNum == " " + onLevel || cardNum == " " + onLevel) {
+            var str = "<input type='image' OnClick='declareACard();' src='" + cardSuit + "'><p>" + cardNum + "</p>";
+          } else {
+            var str = "<input type='image' src='" + cardSuit + "'><p>" + cardNum + "</p>";
+          }
+          $("<h6>" + str).appendTo(document.body);
+          binarySearch(card);
         });
 
         socket.on('declarationHappened', function (player, suit, number) {
@@ -176,6 +186,11 @@ html
           document.getElementById("waiting").innerHTML = "Table at capacity";
           $("h4").show();
         });
+
+        function declareACard() {
+          console.log("hi");
+          socket.emit('declare', name, cardSuit, cardNum);
+        };
 
         function binarySearch(insert) {
           var counter = 0;
