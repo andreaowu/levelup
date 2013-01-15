@@ -22,6 +22,8 @@ html
       br
       center 
         h4(id="waiting") Waiting for players...
+        h10 Someone should declare!
+        h7(id="declaration")
       .sidebar
         .widget
           h2 Table
@@ -32,7 +34,6 @@ html
 
       h5(id="whoisdrawing")
       h5(id="yougotthiscard")
-      h7(id="declaration")
       h8(id="takingturn")
       h9(id="partner")
 
@@ -41,8 +42,9 @@ html
         $("#drawCard").hide();
         $("#whoisdrawing").hide();
         $("#yougotthiscard").hide();
-        $("takingturn").hide();
-        $("partner").hide();
+        $("#takingturn").hide();
+        $("#partner").hide();
+        $("h10").hide();
 
         var cardSuit;
         var cardNum;
@@ -143,8 +145,11 @@ html
           alert(player + " declared!");
           document.getElementById("declaration").innerHTML = player + " declared: " + number +  " of <img src='" + suit + "' height = '25px'>!";
           declare = 1;
-          $("#declaration").css("text-align", "center");
           $("#declaration").show();
+        });
+
+        socket.on('someone declare!', function() {
+          $("h10").show();
         });
 
         socket.on('who stacking', function(name) {
@@ -191,7 +196,7 @@ html
         });
 
         function declareACard() {
-          console.log("hi");
+          $("h10").hide();
           socket.emit('declare', name, cardSuit, cardNum);
         };
 

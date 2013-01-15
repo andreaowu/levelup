@@ -128,7 +128,7 @@ header {
   margin: 50px auto;
 }
 h6 {
-  width: 40px;
+  width: 35px;
   height: 50px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
@@ -146,7 +146,7 @@ h6 input {
 }
 h6 p {
   float: left;
-  margin-left: 14px;
+  margin-left: 13px;
   margin-top: -30px;
   font-family: 'Quicksand';
   font-size: 15px;
