@@ -7,6 +7,9 @@
 * client: press join game, 'join'
 * server: gets information on 'join'
 * when enough people, give random levels by emit 'level'
+*
+* empty space > 10 => J, Q, k > 10. Also Q > K. GR.
+* if someone doesn't declare.
 */
 
 var express = require("express")
@@ -89,11 +92,11 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('drew', function() {
-    if (cards.length > 4) {
       clients[names[namesArray[drawer]]].emit('giveCard', cards[0]);
       player_cards[namesArray[drawer]].push(cards.shift());
       drawer += 1;
       drawer = drawer % 4;
+    if (cards.length > 4) {
       io.sockets.emit('drawing', namesArray[drawer]);
       clients[names[namesArray[drawer]]].emit('start');
     } else {

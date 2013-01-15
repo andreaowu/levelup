@@ -69,6 +69,7 @@ html
 
         socket.on('start', function () {
           $("#drawCard").show();
+          console.log("start");
         });
 
         socket.on('level', function (players, numbers) {
@@ -110,7 +111,6 @@ html
           } else {
             onLevel = level;
           }
-          console.log("personal level:" + onLevel);
         });
 
         socket.on('drawing', function(name) {
@@ -118,6 +118,7 @@ html
           $("#whoisdrawing").css("text-align", "center")
           $("#whoisdrawing").css("margin-top", "80px")
           $("#whoisdrawing").show();
+          console.log("drawing");
         });
 
         socket.on('giveCard', function(card) {
@@ -133,7 +134,9 @@ html
             var str = "<input type='image' src='" + cardSuit + "'><p>" + cardNum + "</p>";
           }
           $("<h6>" + str).appendTo(document.body);
+          console.log("before binary search");
           binarySearch(card);
+          console.log("givecard");
         });
 
         socket.on('declarationHappened', function (player, suit, number) {
@@ -193,33 +196,39 @@ html
         };
 
         function binarySearch(insert) {
+          var high = cards.length - 1;
+          var low = 0;
           var counter = 0;
-          while (1) {
+          var add = 0;
+          while (low <= high) {
+            counter = Math.floor((low + high) / 2);
+            console.log("begin high: " + high);
+            console.log("begin low: " + low);
+            console.log("begin counter: " + counter);
+            add = 0;
             if (cards[counter] > insert && ( (counter - 1 >= 0 && cards[counter - 1] < insert) || counter - 1 < 0) ) {
+              console.log("fit");
               break;
             } else if (cards[counter] < insert) {
-              if (counter == 0) {
-                if (cards.length == 1) {
-                  counter = Math.floor((cards.length + 1)/2);
-                } else {
-                  counter = Math.floor(cards.length/2);
-                }
-              } else {
-                counter = counter*2;
-              }
+              low = counter + 1;
+              add = 1;
+              console.log("high: " + high);
+              console.log("low: " + low);
+              console.log("counter: " + counter);
+              console.log("low add");
             } else if (counter - 1 >= 0 && cards[counter - 1] > insert) {
-              if (counter == 0) {
-                if (cards.length == 1) {
-                  counter = Math.floor((cards.length + 1)/2);
-                } else {
-                  counter = Math.floor(cards.length/2);
-                }
-              } else {
-                counter = counter/2;
-              }
+              high = counter - 1;
+              console.log("high: " + high);
+              console.log("low: " + low);
+              console.log("counter: " + counter);
+              console.log("high subtract");
             } else {
+              console.log("break");
               break;
             }
+          }
+          if (add) {
+            counter += 1;
           }
           cards.push(insert);
           for (var i = cards.length - 1; i > counter; i--) {
