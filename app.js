@@ -35,7 +35,7 @@ var cards = ["http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Leve
             "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/abigjoker_zps666b2609.png  ", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/abigjoker_zps666b2609.png  ", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/asmalljoker_zps05417c29.png  ", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/asmalljoker_zps05417c29.png  "];
 var drawer = 0;
 var player_cards = {}; //name to cards
-var declarer;
+var declarer = null;
 var round = 0; //max is 25
 var suit;
 var number;
@@ -96,7 +96,7 @@ io.sockets.on('connection', function (socket) {
       player_cards[namesArray[drawer]].push(cards.shift());
       drawer += 1;
       drawer = drawer % 4;
-    if (cards.length > 4) {
+    if (cards.length > 54) {
       io.sockets.emit('drawing', namesArray[drawer]);
       clients[names[namesArray[drawer]]].emit('start');
     } else {
@@ -115,7 +115,7 @@ io.sockets.on('connection', function (socket) {
     suit = suitDec;
     number = numberDec;
     declarer = name;
-    drawer = namesArray.index(name);
+    drawer = namesArray.indexOf(name);
   });
 
   socket.on('stacked', function(card) {

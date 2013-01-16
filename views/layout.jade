@@ -16,14 +16,16 @@ html
       .main-content
         block content
       center
+        h10 Waiting for a player to declare...
+        h7(id="declaration")
+        br
+        br
         input(type="button", id="joinGame", value = "Join game")
         input(type="button", id="drawCard", value = "Draw Card")
       br
       br
       center 
         h4(id="waiting") Waiting for players...
-        h10 Someone should declare!
-        h7(id="declaration")
       .sidebar
         .widget
           h2 Table
@@ -46,13 +48,15 @@ html
         $("#partner").hide();
         $("h10").hide();
 
-        var cardSuit;
-        var cardNum;
         var name;
         var cards = [];
         var margintop = 0;
         var declare = 0;
+        var suitDec;
+        var numDec;
         var onLevel;
+        var cardNum;
+        var cardSuit;
 
         $("#joinGame").click(function () {
           var enteredData = prompt("What's your name?");
@@ -128,23 +132,21 @@ html
           cardSuit = card.substring(0, card.length - 2);
           cardNum = card.substring(card.length - 2, card.length);
           var str;
-          console.log(cardNum)
-          console.log(onLevel)
           if (cardNum == " " + onLevel || cardNum == " " + onLevel) {
             var str = "<input type='image' OnClick='declareACard();' src='" + cardSuit + "'><p>" + cardNum + "</p>";
           } else {
             var str = "<input type='image' src='" + cardSuit + "'><p>" + cardNum + "</p>";
           }
           $("<h6>" + str).appendTo(document.body);
-          console.log("before binary search");
           binarySearch(card);
-          console.log("givecard");
         });
 
         socket.on('declarationHappened', function (player, suit, number) {
           alert(player + " declared!");
           document.getElementById("declaration").innerHTML = player + " declared: " + number +  " of <img src='" + suit + "' height = '25px'>!";
           declare = 1;
+          suitDec = suit;
+          numDec = number;
           $("#declaration").show();
         });
 
@@ -153,6 +155,19 @@ html
         });
 
         socket.on('who stacking', function(name) {
+          var factor = 0;
+          var i = cards.length - 1;
+          var trumpNums = [];
+          while (i > trumpNums.length + factor) {
+            if (cards[i].substring(cards[i].length - 2, cards[i].length) == numDec) {
+              factor += 1;
+              trumpNums.push(cards[i]);
+            }
+            cards[i] = cards[i - factor];
+          }
+          for (var j = i - 1, i = 0; j > trumpNums.length; j--, i++) {
+            cards[j] = trumpNums[i];
+          }
           alert("Game starting, " + name + " is stacking cards.");
         });
 
@@ -240,6 +255,7 @@ html
             cards[i] = cards[i - 1];
           }
           cards[counter] = insert;
+          return counter;
           console.log(cards);
         };
 
@@ -278,6 +294,5 @@ html
             return 0;
           }
         }
-
 
 
