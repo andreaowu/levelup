@@ -55,8 +55,7 @@ html
         var suitDec;
         var numDec;
         var onLevel;
-        var cardNum;
-        var cardSuit;
+        var idNum = 0;
 
         $("#joinGame").click(function () {
           var enteredData = prompt("What's your name?");
@@ -109,11 +108,11 @@ html
 
         socket.on('personal level', function(level) {
           if (level == 11) {
-            onLevel = "J";
+            onLevel = "J ";
           } else if (level == 12) {
-            onLevel = "Q";
+            onLevel = "Q ";
           } else if (level == 13) {
-            onLevel = "K";
+            onLevel = "K ";
           } else {
             onLevel = level;
           }
@@ -128,16 +127,22 @@ html
         });
 
         socket.on('giveCard', function(card) {
-          console.log("card: " + card);
-          cardSuit = card.substring(0, card.length - 2);
-          cardNum = card.substring(card.length - 2, card.length);
+          console.log("card: " + card + "level: " + onLevel + ".");
+          var cardSuit = card.substring(0, card.length - 2);
+          var cardNum = card.substring(card.length - 2, card.length);
           var str;
-          if (cardNum == " " + onLevel || cardNum == " " + onLevel) {
-            var str = "<input type='image' OnClick='declareACard();' src='" + cardSuit + "'><p>" + cardNum + "</p>";
+          if (cardNum == "" + onLevel || cardNum == " " + onLevel) {
+            var str = "<input type='image' id ='" + idNum + "' src='" + cardSuit + "'><p>" + cardNum + "</p>";
+            console.log(str);
+            $("<h6>" + str).appendTo(document.body);
+            var elem = document.getElementById("" + idNum);
+            elem.onclick = function() { declareACard(cardSuit, cardNum) };
+            console.log(elem);
+            idNum += 1;
           } else {
             var str = "<input type='image' src='" + cardSuit + "'><p>" + cardNum + "</p>";
+            $("<h6>" + str).appendTo(document.body);
           }
-          $("<h6>" + str).appendTo(document.body);
           binarySearch(card);
         });
 
@@ -210,9 +215,9 @@ html
           $("h4").show();
         });
 
-        function declareACard() {
+        function declareACard(suit, num) {
           $("h10").hide();
-          socket.emit('declare', name, cardSuit, cardNum);
+          socket.emit('declare', name, suit, num);
         };
 
         function binarySearch(insert) {
