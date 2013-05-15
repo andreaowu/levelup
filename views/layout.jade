@@ -128,8 +128,9 @@ html
 
         socket.on('giveCard', function(card) {
           console.log("card: " + card + "level: " + onLevel + ".");
-          var cardSuit = card.substring(0, card.length - 2);
-          var cardNum = card.substring(card.length - 2, card.length);
+          card = card.split(' ');
+          var cardSuit = card[0];
+          var cardNum = card[1];
           var str;
           if (cardNum == "" + onLevel || cardNum == " " + onLevel) {
             var str = "<input type='image' id ='" + idNum + "' src='" + cardSuit + "'><p>" + cardNum + "</p>";
