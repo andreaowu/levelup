@@ -80,7 +80,9 @@ html
         socket.on('level', function (players, numbers) {
           $("h4").hide();
           for (var i = 0; i < 4; i++) {
-            if (numbers[i] > 10) {
+            if (numbers[i] == 1) {
+              numbers[i] = "A";
+            } else if (numbers[i] > 10) {
               if (numbers[i] == 11) {
                 numbers[i] = "J";
               } else if (numbers[i] == 12) {
@@ -113,6 +115,8 @@ html
             onLevel = "Q ";
           } else if (level == 13) {
             onLevel = "K ";
+          } else if (level == A) {
+            onLevel = "A ";
           } else {
             onLevel = level;
           }
@@ -158,6 +162,8 @@ html
             number = "Q";
           } else if (number == 13) {
             number = "K";
+          } else if (number == 1) {
+            number = "A";
           }
           document.getElementById("declaration").innerHTML = player + " declared: " + number +  " of <img src='" + suit + "' height = '25px'>!";
           declare = 1;
@@ -176,19 +182,6 @@ html
         socket.on('who stacking', function(name) {
           console.log("who stacking begin");
           $("#whoisdrawing").hide();
-          var factor = 0;
-          var i = cards.length - 1;
-          var trumpNums = [];
-          while (i > trumpNums.length + factor) {
-            if (cards[i].substring(cards[i].length - 2, cards[i].length) == numDec) {
-              factor += 1;
-              trumpNums.push(cards[i]);
-            }
-            cards[i] = cards[i - factor];
-          }
-          for (var j = i - 1, i = 0; j > trumpNums.length; j--, i++) {
-            cards[j] = trumpNums[i];
-          }
           alert("Game starting, " + name + " is stacking cards.");
         });
 
@@ -242,7 +235,7 @@ html
           $("h3").hide();
           $("h4").show();
           $("h5").hide();
-          alert(person + " left the game...need to wait");
+          alert(person + " left the game... to wait");
         });
 
         socket.on('rejoined', function() {
