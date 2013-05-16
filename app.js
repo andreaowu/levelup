@@ -38,13 +38,14 @@ var cards = ["http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Leve
             "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.png A", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.png 2", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.png 3", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.png 4", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.png 5", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.png 6", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.png 7", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.png 8", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.png 9", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.png10", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.pngJ ", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.pngQ ", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.pngK ",
             "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/abigjoker_zps666b2609.png  ", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/abigjoker_zps666b2609.png  ", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/asmalljoker_zps05417c29.png  ", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/asmalljoker_zps05417c29.png  "];
 var deletelater = ["http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png A", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 2", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 3", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 4"];
+//var cards = ["http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 2", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 3", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 4", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 5", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 6", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 7", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 8", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 9"];
 var drawer = 0;
 var declarer = null;
 var round = 0; //max is 25
 var suit; //first card of round
 var number; //first card of round
 var broken = 0; //whether trump suit is broken
-var tell = 0;
+var tell = false;
 var nobody = 0;
 var beganAlready = false;
 var levelsOfPlayers = new Array(); // array of players' levels in order
@@ -77,8 +78,8 @@ io.sockets.on('connection', function (socket) {
       if (namesArray.length == 4) {
         if (!beganAlready) {
           cards = shuffleArray(cards);
-          levels = new Array(10, 11, 12, 13);
-          //levels = new Array(Math.ceil(Math.random()*12 + 1), Math.ceil(Math.random()*12 + 1), Math.ceil(Math.random()*12 + 1), Math.ceil(Math.random()*12 + 1));
+          //levels = [2, 3, 4, 5];
+          levels = new Array(Math.ceil(Math.random()*12 + 1), Math.ceil(Math.random()*12 + 1), Math.ceil(Math.random()*12 + 1), Math.ceil(Math.random()*12 + 1));
           levelsOfPlayers = levels;
           io.sockets.emit('level', namesArray, levels);
           for (var i = 0; i < 4; i++) {
@@ -106,11 +107,13 @@ io.sockets.on('connection', function (socket) {
     player_cards[namesArray[drawer]].push(cards.shift());
     drawer += 1;
     drawer = drawer % 4;
-    if (cards.length > 54) {
+    if (cards.length > 4) { // change number to be the number of cards
       io.sockets.emit('drawing', namesArray[drawer]);
       clients[names[namesArray[drawer]]].emit('start');
     } else {
-      giveStack();
+      if (declarer == null) {
+        io.sockets.emit('someoneDeclare');
+      }
     }
   });
 
@@ -119,10 +122,6 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('declare', function(name, suitDec, numberDec) {
-    console.log(name);
-    console.log(suitDec);
-    console.log(numberDec);
-    console.log(levelsOfPlayers);
     if (numberDec.indexOf("J") != -1) {
       numberDec = "11";
     } else if (numberDec.indexOf("Q") != -1) {
@@ -140,9 +139,9 @@ io.sockets.on('connection', function (socket) {
           suit = suitDec;
           number = numberDec;
           declarer = name;
-          if (cards.length == 4 && nobody == 0) {
-            giveStack();
-            break;
+          console.log(declarer);
+          if (cards.length == 4) {
+              giveStack();
           }
           break;
         }
@@ -186,16 +185,13 @@ io.sockets.on('connection', function (socket) {
 });
 
 function giveStack () {
-  if (declarer === null) {
-    nobody = 1;
-    io.sockets.emit('someone declare!');
-  } else {
-    if (!tell) {
-      io.sockets.emit('who stacking', declarer);
-      tell += 1;
-      clients[names[declarer]].emit('stack', deletelater);
-      cards = [];
-    }
+  console.log("give stack");
+  if (!tell) { // whether the person got the stack yet
+    console.log("tell");
+    io.sockets.emit('who stacking', declarer);
+    tell = true;
+    clients[names[declarer]].emit('stack', deletelater);
+    cards = [];
   }
 }
 

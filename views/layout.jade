@@ -130,7 +130,6 @@ html
           var cardSuit = card.substring(0, card.length - 2);
           var cardNum = card.substring(card.length - 2, card.length);
           var str = "<input type='image' id ='" + idNum + "' src='" + cardSuit + "'><p>" + cardNum + "</p>";
-          console.log(str);
           $("<h6>" + str).appendTo(document.body);
           var elem = document.getElementById("" + idNum);
           elem.onclick = function() { declareACard(cardSuit, cardNum) };
@@ -167,9 +166,11 @@ html
           $("#declaration").show();
         });
 
-        socket.on('someone declare!', function() {
+        socket.on('someoneDeclare', function() {
+          console.log("someonedeclare");
           $("h10").show();
           $("#whoisdrawing").hide();
+          console.log("end of someonedeclare");
         });
 
         socket.on('who stacking', function(name) {
@@ -195,8 +196,14 @@ html
           console.log("here's the stack");
           alert("Here's your stack");
           for (var i = 0; i < 4; i++) {
-            binarySearch(cards[i]);
+            console.log("hi cards");
+            var cardSuit = cards[i].substring(0, cards[i].length - 2);
+            var cardNum = cards[i].substring(cards[i].length - 2, cards[i].length);
+            var str = "<input type='image' id ='" + idNum + "' src='" + cardSuit + "'><p>" + cardNum + "</p>";
+            $("<h6>" + str).appendTo(document.body);
           }
+
+
           alert("Choose four cards to stack");
           var stacked = 0;
           $("h6").click(function () {
