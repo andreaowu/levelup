@@ -77,7 +77,8 @@ io.sockets.on('connection', function (socket) {
       if (namesArray.length == 4) {
         if (!beganAlready) {
           cards = shuffleArray(cards);
-          levels = new Array(Math.ceil(Math.random()*12 + 1), Math.ceil(Math.random()*12 + 1), Math.ceil(Math.random()*12 + 1), Math.ceil(Math.random()*12 + 1));
+          levels = new Array(10, 11, 12, 13);
+          //levels = new Array(Math.ceil(Math.random()*12 + 1), Math.ceil(Math.random()*12 + 1), Math.ceil(Math.random()*12 + 1), Math.ceil(Math.random()*12 + 1));
           levelsOfPlayers = levels;
           io.sockets.emit('level', namesArray, levels);
           for (var i = 0; i < 4; i++) {
@@ -105,7 +106,7 @@ io.sockets.on('connection', function (socket) {
     player_cards[namesArray[drawer]].push(cards.shift());
     drawer += 1;
     drawer = drawer % 4;
-    if (cards.length > 4) {
+    if (cards.length > 54) {
       io.sockets.emit('drawing', namesArray[drawer]);
       clients[names[namesArray[drawer]]].emit('start');
     } else {
@@ -118,22 +119,33 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('declare', function(name, suitDec, numberDec) {
-    console.log("name");
+    console.log(name);
+    console.log(suitDec);
+    console.log(numberDec);
+    console.log(levelsOfPlayers);
+    if (numberDec.indexOf("J") != -1) {
+      numberDec = "11";
+    } else if (numberDec.indexOf("Q") != -1) {
+      numberDec = "12";
+    } else if (numberDec.indexOf("K") != -1) {
+      numberDec = "13";
+    }
+    console.log(numberDec);
     var dec = false;
     for (var i = 0; i < 4; i++) {
       if (name == namesArray[i] && numberDec == levelsOfPlayers[i]) {
         if (declarer == null) {
           dec = true;
-        io.sockets.emit('declarationHappened', name, suitDec, numberDec);
-        suit = suitDec;
-        number = numberDec;
-        declarer = name;
-        if (cards.length == 4 && nobody == 0) {
-          giveStack();
-        } else {
-        } 
+          io.sockets.emit('declarationHappened', name, suitDec, numberDec);
+          suit = suitDec;
+          number = numberDec;
+          declarer = name;
+          if (cards.length == 4 && nobody == 0) {
+            giveStack();
+            break;
+          }
+          break;
         }
-        
       }
     }
     if (!dec) {

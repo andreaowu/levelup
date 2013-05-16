@@ -153,6 +153,13 @@ html
         socket.on('declarationHappened', function (player, suit, number) {
           $("h10").hide();
           alert(player + " declared!");
+          if (number == 11) {
+            number = "J";
+          } else if (number == 12) {
+            number = "Q";
+          } else if (number == 13) {
+            number = "K";
+          }
           document.getElementById("declaration").innerHTML = player + " declared: " + number +  " of <img src='" + suit + "' height = '25px'>!";
           declare = 1;
           suitDec = suit;
