@@ -56,6 +56,7 @@ html
         var numDec;
         var onLevel;
         var idNum = 0;
+        var nobody = 0;
 
         $("#joinGame").click(function () {
           var enteredData = prompt("What's your name?");
@@ -74,7 +75,6 @@ html
 
         socket.on('start', function () {
           $("#drawCard").show();
-          console.log("start");
         });
 
         socket.on('level', function (players, numbers) {
@@ -123,30 +123,35 @@ html
           $("#whoisdrawing").css("text-align", "center")
           $("#whoisdrawing").css("margin-top", "80px")
           $("#whoisdrawing").show();
-          console.log("drawing");
         });
 
         socket.on('giveCard', function(card) {
           console.log("card: " + card + "level: " + onLevel + ".");
           var cardSuit = card.substring(0, card.length - 2);
           var cardNum = card.substring(card.length - 2, card.length);
-          var str;
-          if (cardNum == "" + onLevel || cardNum == " " + onLevel) {
-            var str = "<input type='image' id ='" + idNum + "' src='" + cardSuit + "'><p>" + cardNum + "</p>";
-            console.log(str);
-            $("<h6>" + str).appendTo(document.body);
-            var elem = document.getElementById("" + idNum);
-            elem.onclick = function() { declareACard(cardSuit, cardNum) };
-            console.log(elem);
-            idNum += 1;
-          } else {
-            var str = "<input type='image' src='" + cardSuit + "'><p>" + cardNum + "</p>";
-            $("<h6>" + str).appendTo(document.body);
-          }
+          var str = "<input type='image' id ='" + idNum + "' src='" + cardSuit + "'><p>" + cardNum + "</p>";
+          console.log(str);
+          $("<h6>" + str).appendTo(document.body);
+          var elem = document.getElementById("" + idNum);
+          elem.onclick = function() { declareACard(cardSuit, cardNum) };
+          console.log(elem);
+          idNum += 1;
           binarySearch(card);
         });
 
+        function declareACard(suit, num) {
+          $("h10").hide();
+          console.log(suit);
+          console.log(num);
+          socket.emit('declare', name, suit, num);
+        };
+
+        socket.on('cannotDeclare', function() {
+          alert("You cannot declare that!");
+        });
+
         socket.on('declarationHappened', function (player, suit, number) {
+          $("h10").hide();
           alert(player + " declared!");
           document.getElementById("declaration").innerHTML = player + " declared: " + number +  " of <img src='" + suit + "' height = '25px'>!";
           declare = 1;
@@ -157,9 +162,12 @@ html
 
         socket.on('someone declare!', function() {
           $("h10").show();
+          $("#whoisdrawing").hide();
         });
 
         socket.on('who stacking', function(name) {
+          console.log("who stacking begin");
+          $("#whoisdrawing").hide();
           var factor = 0;
           var i = cards.length - 1;
           var trumpNums = [];
@@ -177,6 +185,7 @@ html
         });
 
         socket.on('stack', function(cards) {
+          console.log("here's the stack");
           alert("Here's your stack");
           for (var i = 0; i < 4; i++) {
             binarySearch(cards[i]);
@@ -215,10 +224,16 @@ html
           $("h4").show();
         });
 
-        function declareACard(suit, num) {
-          $("h10").hide();
-          socket.emit('declare', name, suit, num);
-        };
+        socket.on('announceLeave', function(person) {
+          $("h3").hide();
+          $("h4").show();
+          $("h5").hide();
+          alert(person + " left the game...need to wait");
+        });
+
+        socket.on('rejoined', function() {
+          alert("Four people in the game again yay!");
+        });
 
         function binarySearch(insert) {
           var high = cards.length - 1;
