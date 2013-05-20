@@ -57,6 +57,8 @@ html
         var onLevel;
         var idNum = 0;
         var nobody = 0;
+        var stacked = 0;
+        var stack = 0;
 
         $("#joinGame").click(function () {
           var enteredData = prompt("What's your name?");
@@ -115,7 +117,7 @@ html
             onLevel = "Q ";
           } else if (level == 13) {
             onLevel = "K ";
-          } else if (level == A) {
+          } else if (level == 1) {
             onLevel = "A ";
           } else {
             onLevel = level;
@@ -125,7 +127,7 @@ html
         socket.on('drawing', function(name) {
           document.getElementById("whoisdrawing").innerHTML = name + " is drawing a card";
           $("#whoisdrawing").css("text-align", "center")
-          $("#whoisdrawing").css("margin-top", "80px")
+          $("#whoisdrawing").css("margin-top", "55px")
           $("#whoisdrawing").show();
         });
 
@@ -139,13 +141,12 @@ html
           elem.onclick = function() { declareACard(cardSuit, cardNum) };
           console.log(elem);
           idNum += 1;
-          binarySearch(card);
         });
 
         function declareACard(suit, num) {
           $("h10").hide();
-          console.log(suit);
-          console.log(num);
+          suitDec = suit;
+          numDec = num;
           socket.emit('declare', name, suit, num);
         };
 
@@ -167,7 +168,16 @@ html
           }
           document.getElementById("declaration").innerHTML = player + " declared: " + number +  " of <img src='" + suit + "' height = '25px'>!";
           declare = 1;
-          suitDec = suit;
+          if (suit.indexOf("spade") > -1) {
+            suitDec = "spade"
+          } else if (suit.indexOf("club") > -1) {
+            suitDec = "club"
+          } else if (suit.indexOf("heart") > -1) {
+            suitDec = "heart"
+          } else {
+            suitDec = "diamond"
+          }
+          console.log(suitDec)
           numDec = number;
           $("#declaration").show();
         });
@@ -185,44 +195,71 @@ html
           alert("Game starting, " + name + " is stacking cards.");
         });
 
-        socket.on('stack', function(cards) {
-          console.log("here's the stack");
-          alert("Here's your stack");
-          for (var i = 0; i < 4; i++) {
-            console.log("hi cards");
-            var cardSuit = cards[i].substring(0, cards[i].length - 2);
-            var cardNum = cards[i].substring(cards[i].length - 2, cards[i].length);
-            var str = "<input type='image' id ='" + idNum + "' src='" + cardSuit + "'><p>" + cardNum + "</p>";
-            $("<h6>" + str).appendTo(document.body);
+        socket.on('stack', function(card) {
+          if (stack == 0) {
+            alert("Here's your stack");
           }
-
-
-          alert("Choose four cards to stack");
-          var stacked = 0;
-          $("h6").click(function () {
-            socket.emit('stacked', this);
-            $(this).hide(function () {
-              $(this).remove();
-            });
-            stacked += 1;
-            if (stacked == 4) {
-              var partner = alert("What card is your partner?");
-              socket.emit('done stacking', partner);
-            }
-          });
+          stack += 1;
+          var cardSuit = card.substring(0, card.length - 2);
+          var cardNum = card.substring(card.length - 2, card.length);
+          var str = "<input type='image' id ='" + idNum + "' src='" + cardSuit + "'><p>" + cardNum + "</p>";
+          console.log("string in stack: " + str);
+          $("<h6>" + str).appendTo(document.body);
+          $("<h6>" + str).hide();
+          var elem = document.getElementById("" + idNum);
+          var id = idNum;
+          elem.onclick = function() { stackACard(cardSuit, cardNum) };
+          idNum += 1;
+          if (stack == 4) {
+            alert("Choose four cards to stack"); 
+          }
         });
+
+        function stackACard(suit, num) {
+          socket.emit('stacked', suit, num);
+          stacked += 1;
+          if (stacked == 4) {
+            alert("You're going to choose your partner (by a card's suit and number) now.");
+            var which = prompt("First or second? Enter one of these: first or second");
+            while (which != "first" && which != "second" && which != "First" && which != "Second") {
+              which = prompt("You put in an incorrect choice. Enter one of these: first or second");
+            }
+            var number = prompt("What number? Enter 10 or one number/letter: A, 2, ..., 9, J, Q, K");
+            while (number != "A" && number != "2" && number != "3" && number != "4" && number != "5" && number != "6" && number != "7" && number != "8" && number != "9" && number != "10" && number != "J" && number != "Q" && number != "K") {
+              number = prompt("You put in an incorrect number. Enter 10 or one number/letter: A, 2, ..., 9, J, Q, K");
+            }
+            var suit = prompt("What suit? Enter one of these: diamond, club, heart, or spade");
+            while ((suit != "diamond" && suit != "club" && suit != "heart" && suit != "spade" && suit!= "Diamond" && suit != "Club" && suit != "Heart" && suit != "Spade") || suit == suitDec) {
+              if (suit == suitDec) {
+                suit = prompt("You cannot choose the suit you declared. Try again");  
+              }   
+              suit = prompt("You put in an incorrect suit. Enter one of these: diamond, club, heart, or spade");
+            }
+            socket.emit('doneStacking', which, suit, number);
+          }
+        };
 
         socket.on('who taking turn', function(name) {
-          document.getElementById("takingturn").innerHTML = name + " is playing a card";
-          $("takingturn").show();
+          document.getElementById("whoisdrawing").innerHTML = name + " is playing a card";
+          $("#whoisdrawing").show();
+          NEED TO GO THROUGH ALL THE CARDS AND MAKE THEM UNCLICKABLE.
         });
 
-        socket.on('partner', function(partner, declarer) {
-          document.getElementById("partner").innerHTML = "The person who plays " + partner + " is " + declarer + "'s partner";
-          $("partner").show();
+        socket.on('partner', function(which, suit, number, declarer) {
+          console.log("partner client");
+          document.getElementById("partner").innerHTML = "The person who plays the " + which + " " + number + " of " + suit + "s is " + declarer + "'s partner" + "<br><br>";
+          $("#partner").css("margin-top", "-412px");
+          $("#partner").css("float", "right");
+          $("#partner").css("text-align", "center");
+          $("#partner").css("margin-right", "150px");
+          $("#partner").show();
+          $("#table").hide();
+          socket.emit('startGame', declarer);
         });
 
-        socket.on('taking turn', function() {});
+        socket.on('play', function() {
+
+        });
 
         socket.on('goodbye', function () {
           $("h4").hide();
@@ -321,5 +358,3 @@ html
             return 0;
           }
         }
-
-

@@ -38,7 +38,7 @@ var cards = ["http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Leve
             "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.png A", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.png 2", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.png 3", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.png 4", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.png 5", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.png 6", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.png 7", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.png 8", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.png 9", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.png10", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.pngJ ", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.pngQ ", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/club_zps232bde05.pngK ",
             "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/abigjoker_zps666b2609.png  ", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/abigjoker_zps666b2609.png  ", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/asmalljoker_zps05417c29.png  ", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/asmalljoker_zps05417c29.png  "];
 var deletelater = ["http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png A", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 2", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 3", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 4"];
-// var cards = ["http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png A", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 2", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 3", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 4", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 5", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 6", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 7", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 8", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps4275136d.png 9", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps4275136d.png10", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps4275136d.pngJ ", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/heart_zps4275136d.pngQ ", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png A", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 2", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 3", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 4"];
+//var cards = ["http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png A", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 2", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 3", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 4", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png A", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 2", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 3", "http://i54.photobucket.com/albums/g98/andreaowu/Website%20Dev/Levelup/spade_zps2465dcec.png 4"];
 var drawer = 0;
 var declarer = null;
 var round = 0; //max is 25
@@ -151,20 +151,23 @@ io.sockets.on('connection', function (socket) {
       }
     }
     if (!dec) {
-        console.log("cannot");
         socket.emit('cannotDeclare');  
       }
   });
 
-  socket.on('stacked', function(card) {
+  socket.on('stacked', function(suit, num) {
+    console.log("stacked");
+    console.log(num);
+    var card = suit + num;
     cards.push(card);
   });
 
-  socket.on('done stacking', function(partner) {
-    io.sockets.emit('partner', partner, declarer);
+  socket.on('doneStacking', function(which, suit, number) {
+    console.log("donestacking");
+    io.sockets.emit('partner', which, suit, number, declarer);
     if (round < 26) {
       io.sockets.emit('who taking turn', namesArray[drawer]);
-      clients[names[namesArray[drawer]]].emit('play', broken);
+      clients[names[namesArray[drawer]]].emit('play');
     }
   });
 
@@ -193,8 +196,10 @@ function giveStack () {
     console.log("tell");
     io.sockets.emit('who stacking', declarer);
     tell = true;
-    clients[names[declarer]].emit('stack', cards);
-    cards = [];
+    for (var i = 0; i < 4; i++) {
+      clients[names[declarer]].emit('stack', cards[0]);
+      cards.shift();
+    }
   }
 }
 
