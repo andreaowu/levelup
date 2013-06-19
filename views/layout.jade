@@ -59,6 +59,7 @@ html
         var nobody = 0;
         var stacked = 0;
         var stack = 0;
+        var alreadyStack = {}
 
         $("#joinGame").click(function () {
           var enteredData = prompt("What's your name?");
@@ -205,7 +206,6 @@ html
           var str = "<input type='image' id ='" + idNum + "' src='" + cardSuit + "'><p>" + cardNum + "</p>";
           console.log("string in stack: " + str);
           $("<h6>" + str).appendTo(document.body);
-          $("<h6>" + str).hide();
           var elem = document.getElementById("" + idNum);
           var id = idNum;
           elem.onclick = function() { stackACard(cardSuit, cardNum) };
@@ -217,7 +217,17 @@ html
 
         function stackACard(suit, num) {
           socket.emit('stacked', suit, num);
+          if (suit in alreadyStack) {
+            if (alreadyStack[suit].indexOf(num) != -1) {
+              alert("You already stacked that card");
+              return;
+            } else {
+              alreadyStack[suit].push(num);
+            }
+          }
+          alreadyStack[suit] = [num];
           stacked += 1;
+          console.log(stacked);
           if (stacked == 4) {
             alert("You're going to choose your partner (by a card's suit and number) now.");
             var which = prompt("First or second? Enter one of these: first or second");
@@ -242,7 +252,6 @@ html
         socket.on('who taking turn', function(name) {
           document.getElementById("whoisdrawing").innerHTML = name + " is playing a card";
           $("#whoisdrawing").show();
-          NEED TO GO THROUGH ALL THE CARDS AND MAKE THEM UNCLICKABLE.
         });
 
         socket.on('partner', function(which, suit, number, declarer) {
@@ -258,7 +267,7 @@ html
         });
 
         socket.on('play', function() {
-
+          console.log("play");
         });
 
         socket.on('goodbye', function () {
