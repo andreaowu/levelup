@@ -249,8 +249,11 @@ html
           }
         };
 
-        socket.on('who taking turn', function(name) {
-          document.getElementById("whoisdrawing").innerHTML = name + " is playing a card";
+        socket.on('who taking turn', function(go) {
+          document.getElementById("whoisdrawing").innerHTML = go + " is playing a card";
+          if (go == name) {
+            document.getElementById("whoisdrawing").innerHTML = "Your turn";
+          }
           $("#whoisdrawing").show();
         });
 
